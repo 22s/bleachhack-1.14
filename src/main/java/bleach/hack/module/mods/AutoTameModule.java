@@ -1,102 +1,71 @@
-package me.ionar.salhack.module.misc;
+package bleach.hack.module.mods;
 
-import me.ionar.salhack.events.network.EventNetworkPacketEvent;
-import me.ionar.salhack.events.player.EventPlayerUpdate;
-import me.ionar.salhack.module.Module;
-import me.ionar.salhack.module.Value;
-import me.ionar.salhack.util.Timer;
-import me.zero.alpine.fork.listener.EventHandler;
-import me.zero.alpine.fork.listener.Listener;
+import bleach.hack.event.events.EventReadPacket;
+import bleach.hack.event.events.EventTick;
+import bleach.hack.module.Category;
+import bleach.hack.utils.BleachLogger;
+import com.google.common.eventbus.Subscribe;
+import bleach.hack.module.Module;
+import net.minecraft.text.LiteralText;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.AbstractHorse;
-import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
-import net.minecraft.network.play.client.CPacketUseEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.entity.passive.AbstractDonkeyEntity;
+import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 
 public class AutoTameModule extends Module
 {
-    public final Value<Float> Delay = new Value<Float>("Delay", new String[] {"D"}, "Delay to remount", 0.1f, 0.0f, 1.0f, 0.1f);
-    
-    public AutoTameModule()
-    {
-        super("AutoTame", new String[] {""}, "Automatically tames the animal you click", "NONE", 0xDB24C4, ModuleType.MISC);
+    public AutoTameModule() {
+        super("AutoTame", KEY_UNBOUND, Category.EXPLOITS, "What do you think?");
     }
-    
-    private AbstractHorse EntityToTame = null;
-    private Timer timer = new Timer();
 
-    @Override
-    public void toggleNoSave()
-    {
-        
-    }
-    
-    @Override
-    public String getMetaData()
-    {
-        if (EntityToTame == null)
-            return null;
-        
-        return EntityToTame.getName();
-    }
-    
-    @Override
-    public void onEnable()
-    {
+    private AbstractDonkeyEntity EntityToTame = null;
+
+    public void onEnable() {
         super.onEnable();
-        
-        SendMessage("Right click an animal you want to tame");
-        
-        EntityToTame = null;
+        BleachLogger.errorMessage("Right click an animal you want to tame.");
     }
 
-    @EventHandler
-    private Listener<EventNetworkPacketEvent> PacketEvent = new Listener<>(p_Event ->
+    @Subscribe
+    public void onPacket(EventReadPacket event)
     {
-        if (p_Event.getPacket() instanceof CPacketUseEntity)
+        if (event.getPacket() instanceof PlayerInteractEntityC2SPacket)
         {
             if (EntityToTame != null)
                 return;
             
-            final CPacketUseEntity l_Packet = (CPacketUseEntity) p_Event.getPacket();
-            
-            Entity l_Entity = l_Packet.getEntityFromWorld(mc.world);
-            
-            if (l_Entity instanceof AbstractHorse)
+            final PlayerInteractEntityC2SPacket l_Packet = (PlayerInteractEntityC2SPacket) event.getPacket();
+
+            Entity l_Entity = l_Packet.getEntity(mc.world);
+
+            if (l_Entity instanceof AbstractDonkeyEntity)
             {
-                if (!((AbstractHorse) l_Entity).isTame())
+                if (!((AbstractDonkeyEntity) l_Entity).isTame())
                 {
-                    EntityToTame = (AbstractHorse)l_Entity;
-                    SendMessage("Will try to tame " + l_Entity.getName());
+                    EntityToTame = (AbstractDonkeyEntity) l_Entity;
+                    BleachLogger.errorMessage("Will try to tame " + l_Entity.getEntityName());
                 }
             }
         }
-    });
-    
-    @EventHandler
-    private Listener<EventPlayerUpdate> OnPlayerUpdate = new Listener<>(p_Event ->
+    }
+
+    @Subscribe
+    public void onTick(EventTick event)
     {
         if (EntityToTame == null)
             return;
-        
+
         if (EntityToTame.isTame())
         {
-            SendMessage("Successfully tamed " + EntityToTame.getName() + ", disabling.");
-            toggle();
+            BleachLogger.errorMessage("Successfully tamed animal, disabling.");
+            this.setToggled(false);
             return;
         }
-        
+
         if (mc.player.isRiding())
             return;
-        
-        if (mc.player.getDistance(EntityToTame) > 5.0f)
+
+        if (mc.player.getAttackDistanceScalingFactor(EntityToTame) > 5.0f)
             return;
-        
-        if (!timer.passed(Delay.getValue() * 1000))
-            return;
-        
-        timer.reset();
-        mc.getConnection().sendPacket(new CPacketUseEntity(EntityToTame, EnumHand.MAIN_HAND));
-    });
+
+        mc.player.networkHandler.sendPacket(new PlayerInteractEntityC2SPacket(EntityToTame, false));
+    }
 }
