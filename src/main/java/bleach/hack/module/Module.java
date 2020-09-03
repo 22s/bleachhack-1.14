@@ -18,13 +18,14 @@
 package bleach.hack.module;
 
 import bleach.hack.BleachHack;
+import bleach.hack.module.mods.ToggleMSGs;
 import bleach.hack.setting.base.SettingBase;
+import bleach.hack.utils.BleachLogger;
 import bleach.hack.utils.file.BleachFileHelper;
-import bleach.hack.utils.file.BleachFileMang;
 import com.google.common.eventbus.Subscribe;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.text.LiteralText;
+import net.minecraft.util.Formatting;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -72,6 +73,9 @@ public class Module {
                 break;
             }
         }
+        if (ModuleManager.getModule(ToggleMSGs.class).isToggled() && !this.getName().equals("ClickGUI") && !this.getName().equals("ColourChooser")){
+            BleachLogger.infoMessage(this.getName() + " Enabled");
+        }
     }
 
     public void onDisable() {
@@ -86,6 +90,9 @@ public class Module {
             }
         } catch (Exception this_didnt_get_registered_hmm_weird) {
             this_didnt_get_registered_hmm_weird.printStackTrace();
+        }
+        if (ModuleManager.getModule(ToggleMSGs.class).isToggled() && !this.getName().equals("ClickGUI") && !this.getName().equals("ColourChooser")){
+            BleachLogger.infoMessage(this.getName() + " Disabled");
         }
     }
 

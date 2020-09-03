@@ -18,8 +18,6 @@
 package bleach.hack.module;
 
 import bleach.hack.event.events.EventKeyPress;
-import bleach.hack.event.events.EventOpenScreen;
-import bleach.hack.event.events.EventWorldRender;
 import bleach.hack.module.mods.*;
 import com.google.common.eventbus.Subscribe;
 import net.minecraft.client.MinecraftClient;
