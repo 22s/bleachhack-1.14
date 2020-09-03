@@ -67,7 +67,7 @@ public class ModuleManager {
             new ElytraFly(),
             new EntityControl(),
             new ElytraReplace(),
-			new AllahHaram(),
+            new AllahHaram(),
             new AutoTameModule(),
             new FakeLag(),
             new FastUse(),
