@@ -25,10 +25,10 @@ import com.google.common.eventbus.Subscribe;
 import net.minecraft.block.Blocks;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 
-public class Nofall extends Module {
+public class NoFall extends Module {
 
     public Nofall() {
-        super("Nofall", KEY_UNBOUND, Category.PLAYER, "Prevents you from taking fall damage.",
+        super("NoFall", KEY_UNBOUND, Category.PLAYER, "Prevents you from taking fall damage.",
                 new SettingMode("Mode", "Simple", "Packet"));
     }
 
