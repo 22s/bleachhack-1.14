@@ -130,6 +130,7 @@ public class ModuleManager {
         new FootXp(),
         new LiquidRemover(),
         new ShulkerView(),
+        new SourceESP(),
         new AutoEZ(),
         new AutoTrap(),
 
