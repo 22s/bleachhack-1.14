@@ -18,6 +18,13 @@
 package bleach.hack.command.commands;
 
 import bleach.hack.command.Command;
+import bleach.hack.utils.BleachLogger;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
 import net.minecraft.text.LiteralText;
 
 public class CmdDupe extends Command {
@@ -29,7 +36,7 @@ public class CmdDupe extends Command {
 
     @Override
     public String getDescription() {
-        return "Dupes an item on vanilla servers. (PATCHED IN 1.14.4+)";
+        return "Does the book and quill dupe.";
     }
 
     @Override
@@ -39,8 +46,24 @@ public class CmdDupe extends Command {
 
     @Override
     public void onCommand(String command, String[] args) throws Exception {
-        mc.player.dropSelectedItem(true);
-        mc.player.networkHandler.getConnection().disconnect(new LiteralText("Duping..."));
-    }
+        ItemStack itemStack = new ItemStack(Items.WRITABLE_BOOK, 1);
+        if (mc.player.inventory.getMainHandStack().getItem() != Items.WRITABLE_BOOK) {
+            BleachLogger.errorMessage("Hand is not holding book and quill!");
+            return;
+        }
+        String str1;
 
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < 21845; i++)
+            stringBuilder.append('\u0800');
+        str1 = stringBuilder.toString();
+        System.out.println("CALLED");
+        ListTag listTag = new ListTag();
+        listTag.add(0, StringTag.of(str1));
+        for (int i = 1; i < 38; i++)
+            listTag.add(i, StringTag.of("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
+        itemStack.putSubTag("pages", listTag);
+        itemStack.putSubTag("title", StringTag.of("a"));
+        mc.getNetworkHandler().sendPacket(new BookUpdateC2SPacket(itemStack, true, mc.player.inventory.selectedSlot));
+    }
 }
