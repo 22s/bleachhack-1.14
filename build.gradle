@@ -7,6 +7,9 @@ repositories {
     maven {
         url 'https://jitpack.io'
     }
+    maven {
+        url 'https://repo.spongepowered.org/repository/maven-public/'
+    }
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -23,14 +26,11 @@ dependencies {
 
     modImplementation 'com.github.ZeroMemes:Alpine:1.9'
     modImplementation 'com.github.Vatuu:discord-rpc:1.6.2'
-    modImplementation("com.gitlab.CDAGaming:fabritone:fabric~1.16.3-SNAPSHOT") {
+    modImplementation ('com.github.cabaletta:baritone:v1.6.3') {
         exclude(group: "org.lwjgl.lwjgl", module: "lwjgl-platform")
         exclude(group: "org.lwjgl.lwjgl", module: "lwjgl")
-        exclude(group: "net.java.jinput", module: "jinput-platform")
-        exclude(group: "net.java.jinput", module: "jinput")
-        exclude(group: "net.sf.jopt-simple", module: "jopt-simple")
-        exclude(group: "org.ow2.asm", module: "asm-debug-all")
     }
+
     include 'com.github.cabaletta:baritone:v1.6.3'
     //modImplementation "com.github.jellysquid3:sodium-fabric:1.16.x~stable-SNAPSHOT"
     //modImplementation 'org.kitteh.irc:client-lib:7.3.0'
